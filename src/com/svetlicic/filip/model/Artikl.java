@@ -1,30 +1,30 @@
-package com.svetlicic.filip;
+package com.svetlicic.filip.model;
 
 import java.util.*;
 
 public class Artikl {
 
-    private final String ime;
+    private final String naziv;
     private double cijena;
     private int zaliha;
     private Map<String, Integer> listaProdanihArtikala;
 
-    public Artikl(String ime, double cijena) {
-        this.ime = ime;
+    public Artikl(String naziv, double cijena) {
+        this.naziv = naziv;
         this.cijena = cijena;
         this.zaliha = 0;
         this.listaProdanihArtikala = new HashMap<>();
     }
 
-    public Artikl(String ime, double cijena, int zaliha) {
-        this.ime = ime;
+    public Artikl(String naziv, double cijena, int zaliha) {
+        this.naziv = naziv;
         this.cijena = cijena;
         this.zaliha = zaliha;
         this.listaProdanihArtikala = new HashMap<>();
     }
 
-    public String getIme() {
-        return ime;
+    public String getNaziv() {
+        return naziv;
     }
 
     public double getCijena() {
@@ -60,7 +60,7 @@ public class Artikl {
     @Override
     public String toString() {
         return "Artikl{" +
-                "ime='" + ime + '\'' +
+                "ime='" + naziv + '\'' +
                 ", cijena=" + cijena +
                 ", zaliha=" + zaliha +
                 '}';

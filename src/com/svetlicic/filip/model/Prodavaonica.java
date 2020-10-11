@@ -1,15 +1,15 @@
-package com.svetlicic.filip;
+package com.svetlicic.filip.model;
 
 import java.text.SimpleDateFormat;
 import java.util.*;
 
 public class Prodavaonica {
 
-    private final String ime;
+    private final String naziv;
     private Set<Artikl> artikli;
 
-    public Prodavaonica(String ime) {
-        this.ime = ime;
+    public Prodavaonica(String naziv) {
+        this.naziv = naziv;
         this.artikli = new HashSet<>();
     }
 
@@ -18,26 +18,33 @@ public class Prodavaonica {
     }
 
     public boolean dodajArtikl(Artikl noviArtikl){
+        if(noviArtikl == null){
+            return false;
+        }
         if(artikli.size() == 0){
             artikli.add(noviArtikl);
             return true;
         }
         for(Artikl artikl : artikli ){
-            if(artikl.getIme().equalsIgnoreCase(noviArtikl.getIme())){
-                System.out.println("Artikl vec postoji!");
+            if(artikl.getNaziv().equalsIgnoreCase(noviArtikl.getNaziv())){
+                artikl.setZaliha(noviArtikl.getZaliha());
             } else {
                 artikli.add(noviArtikl);
-                return true;
             }
+            return true;
         }
         return false;
     }
 
     public boolean prodajArtikl(String datum, String imeArtikla, int kolicina){
 
+        if(datum.equals("") || kolicina <= 0){
+            return false;
+        }
+
         for(Artikl artikl : artikli){
-            if(artikl.getIme().equalsIgnoreCase(imeArtikla)){
-                if(artikl.getZaliha() >= kolicina && kolicina > 0){
+            if(artikl.getNaziv().equalsIgnoreCase(imeArtikla)){
+                if(artikl.getZaliha() >= kolicina){
                     artikl.setZaliha(-kolicina);
                     artikl.dodajUListuProdanihArtikala(datum, kolicina);
                     return true;
@@ -48,8 +55,13 @@ public class Prodavaonica {
         return false;
     }
 
-    public boolean makeNarudzba(Set<String> imenaArtikala, int brojDana){
-        Narudzba narudzba = new Narudzba(imenaArtikala, brojDana);
+    public boolean makeNarudzba(int brojDana){
+
+        if(brojDana <= 0){
+            return false;
+        }
+
+        Narudzba narudzba = new Narudzba(brojDana);
         System.out.println(narudzba.toString());
         return true;
     }
@@ -59,9 +71,9 @@ public class Prodavaonica {
         private final Zaglavlje zaglavlje;
         private final Stavka stavka;
 
-        public Narudzba(Set<String> imenaArtikala, int brojDana) {
+        public Narudzba(int brojDana) {
             this.zaglavlje = new Zaglavlje();
-            this.stavka = new Stavka(imenaArtikala, brojDana);
+            this.stavka = new Stavka(brojDana);
         }
 
         @Override
@@ -77,7 +89,7 @@ public class Prodavaonica {
             private final String datum;
 
             public Zaglavlje() {
-                this.imeProdavaonice = ime;
+                this.imeProdavaonice = naziv;
                 this.datum = new SimpleDateFormat("dd-MM-yyyy").format(new Date());
             }
 
@@ -101,16 +113,15 @@ public class Prodavaonica {
         private final class Stavka {
             private final Map<String, Integer> artikliZaNarudzbu;
 
-            public Stavka(Set<String> imenaArtikala, int brojDana) {
+            public Stavka(int brojDana) {
                 artikliZaNarudzbu = new HashMap<>();
                 for(Artikl artikl : artikli){
-                    if(imenaArtikala.contains(artikl.getIme())){
                         int kolicina = ((int)Math.round(artikl.prosjekProdaje()) * brojDana) - artikl.getZaliha();
-                        if(kolicina < 0){
-                            kolicina = 0;
+                        if(kolicina > 0){
+                            artikliZaNarudzbu.put(artikl.getNaziv(), kolicina);
+                        } else {
+                            System.out.println("Artikl " + artikl.getNaziv() + " ne treba naruciti");
                         }
-                        artikliZaNarudzbu.put(artikl.getIme(), kolicina);
-                    }
                 }
             }
 
